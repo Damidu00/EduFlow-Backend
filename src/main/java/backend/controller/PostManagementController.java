@@ -110,6 +110,7 @@ public class PostManagementController {
         return ResponseEntity.ok(post);
     }
 
+
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable String postId) {
         PostManagementModel post = postRepository.findById(postId)
@@ -224,5 +225,4 @@ public class PostManagementController {
 
 
 }
-
 
