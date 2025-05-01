@@ -128,3 +128,47 @@ public class PostManagementController {
         postRepository.deleteById(postId);
         return ResponseEntity.ok("Post deleted successfully!");
     }
+
+
+    @PutMapping("/{postId}")
+    public ResponseEntity<?> updatePost(
+            @PathVariable String postId,
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam(required = false) List<MultipartFile> newMediaFiles) {
+
+        PostManagementModel post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostManagementNotFoundException("Post not found: " + postId));
+
+        post.setTitle(title);
+        post.setDescription(description);
+
+        if (newMediaFiles != null && !newMediaFiles.isEmpty()) {
+            // Ensure the upload directory exists
+            final File uploadDirectory = new File(uploadDir.isBlank() ? uploadDir : System.getProperty("user.dir"), uploadDir);
+            if (!uploadDirectory.exists()) {
+                boolean created = uploadDirectory.mkdirs();
+                if (!created) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create upload directory.");
+                }
+            }
+
+            List<String> newMediaUrls = newMediaFiles.stream()
+                    .map(file -> {
+                        try {
+                            String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
+                            String uniqueFileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + extension;
+                            Path filePath = uploadDirectory.toPath().resolve(uniqueFileName);
+                            file.transferTo(filePath.toFile());
+                            return "/media/" + uniqueFileName;
+                        } catch (IOException e) {
+                            throw new RuntimeException("Failed to store file " + file.getOriginalFilename(), e);
+                        }
+                    })
+                    .collect(Collectors.toList());
+            post.getMedia().addAll(newMediaUrls);
+        }
+
+        postRepository.save(post);
+        return ResponseEntity.ok("Post updated successfully!");
+    }
