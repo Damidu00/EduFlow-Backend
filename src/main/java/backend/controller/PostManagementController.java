@@ -96,3 +96,10 @@ public class PostManagementController {
     public List<PostManagementModel> getAllPosts() {
         return postRepository.findAll();
     }
+
+    @GetMapping("/user/{userID}")
+    public List<PostManagementModel> getPostsByUser(@PathVariable String userID) {
+        return postRepository.findAll().stream()
+                .filter(post -> post.getUserID().equals(userID))
+                .collect(Collectors.toList());
+    }
