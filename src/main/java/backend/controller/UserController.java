@@ -115,7 +115,7 @@ public class UserController {
                     .orElse("Someone");
             String message = String.format("%s started following you.", followerFullName);
             String currentDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-             notify();  = new NotificationModel(followUserID, message, false, currentDateTime);
+            NotificationModel notification = new NotificationModel(followUserID, message, false, currentDateTime);
             notificationRepository.save(notification);
 
             return ResponseEntity.ok(Map.of("message", "User followed successfully"));
