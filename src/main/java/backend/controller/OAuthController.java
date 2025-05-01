@@ -14,6 +14,7 @@ import java.util.Map;
 @RestController
 public class OAuthController {
 
+    @Autowired
     private UserRepository userRepository;
 
     @GetMapping("/oauth2/success")
