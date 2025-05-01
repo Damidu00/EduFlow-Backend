@@ -91,3 +91,8 @@ public class PostManagementController {
         PostManagementModel savedPost = postRepository.save(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
     }
+
+    @GetMapping
+    public List<PostManagementModel> getAllPosts() {
+        return postRepository.findAll();
+    }
