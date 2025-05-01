@@ -128,3 +128,4 @@ public class PostManagementController {
         postRepository.deleteById(postId);
         return ResponseEntity.ok("Post deleted successfully!");
     }
+
