@@ -17,7 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -105,5 +107,24 @@ public class PostManagementController {
         return ResponseEntity.ok(post);
     }
 
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<?> deletePost(@PathVariable String postId) {
+        PostManagementModel post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostManagementNotFoundException("Post not found: " + postId));
 
+        // Delete associated media files
+        for (String mediaUrl : post.getMedia()) {
+            try {
+                // Resolve the full file path
+                Path filePath = Paths.get(uploadDir, mediaUrl.replace("/media/", ""));
+                Files.deleteIfExists(filePath);
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Failed to delete media file: " + mediaUrl);
+            }
+        }
 
+        // Delete the post from the database
+        postRepository.deleteById(postId);
+        return ResponseEntity.ok("Post deleted successfully!");
+    }
