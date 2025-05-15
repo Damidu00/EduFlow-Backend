@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+//rest controllers
 @RestController
 @RequestMapping("/notifications")
 @CrossOrigin("http://localhost:3000")
@@ -29,7 +29,7 @@ public class NotificationController {
             return ResponseEntity.ok("Notification marked as read");
         }).orElse(ResponseEntity.notFound().build());
     }
-
+//delete notification
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteNotification(@PathVariable String id) {
         if (notificationRepository.existsById(id)) {
